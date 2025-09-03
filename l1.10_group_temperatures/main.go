@@ -11,7 +11,7 @@ func main() {
 	var step int
 
 	for _, t := range data {
-		step = int(t/10) * 10
+		step = (int(t) / 10) * 10
 		groupData[step] = append(groupData[step], t)
 
 	}
