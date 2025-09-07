@@ -19,5 +19,4 @@ func reverseString(s string) string {
 func main() {
 	str := "dog with me on the Moon"
 	fmt.Println(reverseString(str))
-
 }
