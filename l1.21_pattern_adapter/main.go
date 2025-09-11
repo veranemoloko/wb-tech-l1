@@ -1,5 +1,8 @@
-// The Adapter Pattern allows objects with incompatible interfaces
-// to work together.
+// ----------------------------
+// Adapter Pattern:
+// WHEN TO USE: integrate incompatible classes/services via a uniform interface
+// PROS: enables reuse, reduces coupling, unifies interface
+// CONS: extra abstraction, slight overhead, can complicate design if overused
 package main
 
 import "fmt"
