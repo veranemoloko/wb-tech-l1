@@ -5,50 +5,39 @@ import (
 	"fmt"
 )
 
+// swap exchanges elements at positions i and j
 func swap[T any](arr []T, i, j int) {
 	arr[i], arr[j] = arr[j], arr[i]
 }
 
+// quickSort sorts a slice in-place using QuickSort algorithm
 func quickSort[T cmp.Ordered](arr []T) {
+	if len(arr) <= 1 {
+		return // already sorted
+	}
+
 	head, tail := 0, len(arr)-1
 
-	if len(arr) <= 1 {
-		return
-	}
+	// choose the first element as pivot
+	pivot := arr[head]
 
-	// This avoids creating deeper recursive calls unnecessarily
-	// and helps reduce recursion depth overall.
-	if len(arr) == 2 {
-		if arr[head] > arr[tail] {
-			swap(arr, head, tail)
-		}
-		return
-	}
+	// partition: maxBeforePivot points to last element < pivot
+	maxBeforePivot := head
 
-	// choose the pivot as the rightmost element
-	pivot := arr[tail]
-
-	// maxBeforePivot points to the last element smaller than the pivot.
-	// It starts at (head-1), meaning "no elements are smaller yet".
-	maxBeforePivot := head - 1
-
-	// move all elements smaller than pivot to the left side
-	for j := head; j < tail; j++ {
+	for j := head + 1; j <= tail; j++ {
 		if arr[j] < pivot {
 			maxBeforePivot++
 			swap(arr, maxBeforePivot, j)
 		}
 	}
 
-	// place pivot into its correct sorted position
-	swap(arr, maxBeforePivot+1, tail)
-	pivotIndex := maxBeforePivot + 1
+	// put pivot in correct position
+	swap(arr, head, maxBeforePivot)
+	pivotIndex := maxBeforePivot
 
-	// recursively sort (all < pivot)
-	quickSort(arr[head:pivotIndex])
-
-	// recursively sort (all > pivot)
-	quickSort(arr[pivotIndex+1 : tail+1])
+	// recursively sort left and right parts
+	quickSort(arr[:pivotIndex])
+	quickSort(arr[pivotIndex+1:])
 }
 
 func main() {
