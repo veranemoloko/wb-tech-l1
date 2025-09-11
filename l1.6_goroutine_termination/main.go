@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"runtime"
 	"sync"
 	"time"
 )
 
 /*
-comparison of goroutine stopping methods:
+Comparison of goroutine stopping methods:
 
 1. stop with flag
    - pros:
@@ -53,14 +54,26 @@ comparison of goroutine stopping methods:
    - cons:
      * fixed timeout may not match actual work duration
      * requires careful timeout selection
+
+6. stop with runtime.Goexit()
+   - pros:
+     * immediately stops the current goroutine
+     * all defer statements in the goroutine are executed
+     * useful for emergency termination within the goroutine itself
+   - cons:
+     * only stops the current goroutine
+     * no control over other goroutines
+     * rarely used in idiomatic Go
+     * code after Goexit() in the same goroutine will never run
 */
 
 func main() {
-	stopWithFlag()           // stop using special flag
-	stopWithDoneChannel()    // stop using done channel
-	stopWithChannelClose()   // stop using channel close
-	stopWithContextCancel()  // stop using context cancel
-	stopWithContextTimeout() // stop using context timeout
+	stopWithFlag()
+	stopWithDoneChannel()
+	stopWithChannelClose()
+	stopWithContextCancel()
+	stopWithContextTimeout()
+	stopWithGoexit()
 }
 
 // stopWithFlag demonstrates stopping a goroutine by sending a special value (-1) through the channel
@@ -177,4 +190,21 @@ func stopWithContextTimeout() {
 	}(ctx)
 
 	time.Sleep(300 * time.Millisecond)
+}
+
+// stopWithGoexit demonstrates stopping a goroutine using runtime.Goexit
+func stopWithGoexit() {
+	fmt.Println("\n- - - stop with runtime.Goexit")
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		fmt.Println("- go start")
+		runtime.Goexit() // immediately stops the current goroutine
+		fmt.Println("- this line will never be printed")
+	}()
+
+	wg.Wait()
+	fmt.Println("- goroutine stopped using Goexit")
 }
