@@ -2,20 +2,19 @@ package main
 
 import "fmt"
 
-// 1. Memory leak: `justString = v[:100]` keeps a reference to the whole large string,
-//    even though only a small substring is needed.
-// 2. Global variable `justString`:
-//    - lives until the program ends,
-//    - potential data races in concurrent code
-
+// createHugeString simulates a large string
 func createHugeString(size int) string {
 	return string(make([]rune, size))
 }
 
-// avoids global variable and memory leak
+// someFunc returns only the needed substring
 func someFunc() string {
-	v := createHugeString(1 << 10)
-	return string([]rune(v[:100]))
+	v := createHugeString(1 << 10) // large string
+
+	// Answer: slicing v[:100] keeps reference to the whole string, causing memory retention.
+	// Fix: create a new string containing only the needed part.
+	sub := string([]rune(v[:100])) // copy only the first 100 runes
+	return sub
 }
 
 func main() {
